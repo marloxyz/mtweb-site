@@ -1,0 +1,26 @@
+---
+// Dernière carte de la grille des réalisations : « Votre projet ici ? » + bouton WhatsApp.
+// Même format 16:10 que les vignettes, pour garder des lignes alignées.
+import Icon from './Icon.astro';
+import { whatsappLink } from '../data/site';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+---
+
+<article
+  class="@container flex aspect-[16/10] flex-col items-center justify-center gap-3 rounded-md border-2 border-dashed border-blue/60 bg-surface p-4 text-center"
+  data-hide-wa
+>
+  <h3 class="font-display text-[clamp(1.25rem,7cqw,1.75rem)] font-semibold leading-tight">
+    {t.home.work.ctaTitle}
+  </h3>
+  <p class="text-sm text-muted">{t.home.work.ctaText}</p>
+  <a href={whatsappLink(t.whatsapp.project)} class="btn btn-primary !min-h-11 !py-2 text-sm" target="_blank" rel="noopener">
+    <Icon name="whatsapp" size={20} class="text-whatsapp" />
+    {t.common.whatsappCta}
+  </a>
+</article>

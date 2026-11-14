@@ -1,0 +1,80 @@
+---
+// Illustration du hero : un écran, une carte de visite et une carte NFC,
+// dessinés en HTML/CSS (aucune image, aucun projet client simulé).
+// Toutes les dimensions sont en « em », et la taille de base dépend de la largeur
+// de la colonne (container query) : l'illustration grandit avec l'écran.
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+---
+
+<div class="@container w-full" aria-hidden="true">
+  <div class="relative w-full pb-[3.5em] pt-[0.5em] [font-size:clamp(13px,2.857cqw,44px)]">
+    <!-- Écran -->
+    <div class="card crop ml-auto w-[88%] rotate-[1.5deg] shadow-[0_1.5em_3em_-1.75em_rgb(44_49_55/0.55)]">
+      <div class="flex items-center gap-[0.4em] border-b border-line px-[0.8em] py-[0.65em]">
+        <span class="h-[0.6em] w-[0.6em] rounded-full bg-red/80"></span>
+        <span class="h-[0.6em] w-[0.6em] rounded-full bg-yellow"></span>
+        <span class="h-[0.6em] w-[0.6em] rounded-full bg-blue/70"></span>
+        <span class="ml-[0.75em] h-[1em] flex-1 rounded-full bg-paper"></span>
+      </div>
+      <div class="space-y-[0.85em] p-[1.75em]">
+        <div class="h-[0.75em] w-[4em] rounded-full bg-blue/80"></div>
+        <div class="space-y-[0.5em] pt-[0.25em]">
+          <div class="h-[1.4em] w-[80%] rounded-[0.25em] bg-ink/85"></div>
+          <div class="relative h-[1.4em] w-[55%] rounded-[0.25em] bg-ink/85">
+            <span class="absolute -right-[0.8em] bottom-0 h-[0.6em] w-[0.6em] rounded-full bg-red"></span>
+          </div>
+        </div>
+        <div class="space-y-[0.4em] pt-[0.5em]">
+          <div class="h-[0.5em] w-[90%] rounded-full bg-line"></div>
+          <div class="h-[0.5em] w-[70%] rounded-full bg-line"></div>
+        </div>
+        <div class="flex gap-[0.5em] pt-[0.75em]">
+          <div class="h-[2.2em] w-[7.5em] rounded-full bg-ink"></div>
+          <div class="h-[2.2em] w-[5.5em] rounded-full border-[0.1em] border-ink/70"></div>
+        </div>
+        <div class="hidden grid-cols-3 gap-[0.5em] pt-[0.75em] sm:grid">
+          <div class="aspect-[4/3] rounded-[0.25em] bg-blue-tint"></div>
+          <div class="aspect-[4/3] rounded-[0.25em] bg-blue-tint"></div>
+          <div class="aspect-[4/3] rounded-[0.25em] bg-blue-tint"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carte de visite -->
+    <div
+      class="card crop absolute bottom-0 left-0 w-[70%] sm:w-[62%] -rotate-[4deg] bg-white p-[1.4em] shadow-[0_1.4em_2.5em_-1.4em_rgb(44_49_55/0.6)]"
+    >
+      <Logo width={260} class="h-auto w-[7em]" />
+      <div class="mt-[1.6em]">
+        <p class="font-display text-[1.1em] font-semibold leading-tight">{site.owner}</p>
+        <p class="text-[0.75em] text-muted">{t.heroVisual.cardRole}</p>
+        <p class="mt-[0.6em] text-[0.75em] font-medium">{site.phone}</p>
+      </div>
+    </div>
+
+    <!-- Carte NFC -->
+    <div
+      class="absolute -right-[0.25em] bottom-[2.5em] hidden w-[34%] sm:flex rotate-[6deg] flex-col items-center gap-[0.35em] rounded-[0.8em] bg-ink px-[0.75em] py-[1.1em] text-center text-white shadow-[0_1.25em_2.5em_-1.25em_rgb(44_49_55/0.8)]"
+    >
+      <Icon name="nfc" class="h-[2em] w-[2em] text-yellow" />
+      <div class="flex gap-[0.15em] text-yellow">
+        {
+          Array.from({ length: 5 }).map(() => (
+            <svg class="h-[0.75em] w-[0.75em]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3 6.6 7 .7-5.3 4.8 1.6 7L12 17.5 5.7 21.1l1.6-7L2 9.3l7-.7z" />
+            </svg>
+          ))
+        }
+      </div>
+      <p class="text-[0.75em] leading-tight text-white/85">{t.heroVisual.nfcHint[0]}<br />{t.heroVisual.nfcHint[1]}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+
+interface Props {
+  width?: number;
+  class?: string;
+  eager?: boolean;
+}
+const { width = 150, class: className = '', eager = false } = Astro.props;
+---
+
+<Image
+  src={logo}
+  alt="MTWeb"
+  width={width}
+  densities={[1, 2]}
+  format="webp"
+  class={className}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : undefined}
+/>

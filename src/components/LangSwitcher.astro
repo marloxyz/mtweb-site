@@ -1,0 +1,43 @@
+---
+// Sélecteur FR | EN. Pointe vers la même page dans l'autre langue ;
+// si la page n'existe pas dans l'autre langue (pages locales, légales), vers l'accueil de cette langue.
+import { languages, langs, hasLang, localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+  class?: string;
+}
+const { lang, routeKey, class: className = '' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<nav aria-label={t.common.langSwitch} class={className}>
+  <ul class="flex items-center text-sm font-semibold">
+    {
+      langs.map((l, i) => {
+        const info = languages[l];
+        const href = hasLang(routeKey, l) ? localePath(routeKey, l) : localePath('home', l);
+        return (
+          <li class="flex items-center">
+            {i > 0 && (
+              <span class="px-0.5 text-line" aria-hidden="true">
+                |
+              </span>
+            )}
+            {l === lang ? (
+              <span class="tap justify-center rounded-full px-2 text-ink underline decoration-yellow decoration-[3px] underline-offset-[6px]" aria-current="true">
+                <abbr title={info.label} class="no-underline">{info.short}</abbr>
+              </span>
+            ) : (
+              <a href={href} hreflang={info.hreflang} lang={info.htmlLang} class="tap justify-center rounded-full px-2 text-muted hover:bg-surface hover:text-ink">
+                <span aria-hidden="true">{info.short}</span>
+                <span class="sr-only">{info.label}</span>
+              </a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

@@ -1,0 +1,25 @@
+---
+type FaqItem = { q: string; a: string };
+import Icon from './Icon.astro';
+
+interface Props {
+  items: FaqItem[];
+}
+const { items } = Astro.props;
+---
+
+<div class="grid border-t border-line xl:grid-cols-2 xl:gap-x-16">
+  {
+    items.map((item) => (
+      <details class="group border-b border-line py-1" data-reveal>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-left font-display text-lg font-semibold sm:text-xl [&::-webkit-details-marker]:hidden">
+          {item.q}
+          <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line bg-surface transition group-open:rotate-45 group-open:bg-yellow">
+            <Icon name="plus" size={18} />
+          </span>
+        </summary>
+        <p class="measure pb-5 pr-12 leading-relaxed text-muted">{item.a}</p>
+      </details>
+    ))
+  }
+</div>

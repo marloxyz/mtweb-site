@@ -1,0 +1,187 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import LangSwitcher from './LangSwitcher.astro';
+import { whatsappLink } from '../data/site';
+import { localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+}
+const { lang, routeKey } = Astro.props;
+const t = useTranslations(lang);
+
+type Item = { label: string; key: RouteKey };
+type Group = { label: string; children: Item[] };
+const nav: (Item | Group)[] = [
+  { label: t.nav.website, key: 'website' },
+  {
+    label: t.nav.prints,
+    children: [
+      { label: t.pages.businessCards, key: 'businessCards' },
+      { label: t.pages.flyers, key: 'flyers' },
+      { label: t.pages.signs, key: 'signs' },
+    ],
+  },
+  { label: t.nav.logo, key: 'logo' },
+  { label: t.nav.nfc, key: 'nfc' },
+  { label: t.pages.portfolio, key: 'portfolio' },
+  { label: t.pages.pricing, key: 'pricing' },
+];
+const href = (key: RouteKey) => localePath(key, lang);
+const isActive = (key: RouteKey) => key === routeKey;
+---
+
+<header class="sticky top-0 z-40 border-b border-line/70 bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
+  <a
+    href="#contenu"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-ink focus:px-4 focus:py-2 focus:text-white"
+    >{t.common.skipLink}</a
+  >
+  <div class="container-site flex h-16 items-center justify-between gap-3 lg:h-[4.5rem]">
+    <a href={href('home')} class="tap shrink-0" aria-label={t.common.homeAria}>
+      <Logo width={128} eager class="h-auto w-[104px] sm:w-[128px]" />
+    </a>
+
+    <nav aria-label={t.common.navMain} class="hidden lg:block">
+      <ul class="flex items-center gap-1 text-[0.95rem] font-medium">
+        {
+          nav.map((item) =>
+            'children' in item ? (
+              <li class="group relative">
+                <button
+                  type="button"
+                  class="tap gap-1 rounded-full px-3 hover:bg-surface"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  data-dropdown
+                >
+                  {item.label}
+                  <Icon name="chevron" size={16} class="transition-transform group-[.open]:rotate-180" />
+                </button>
+                <ul class="card invisible absolute left-0 top-full mt-2 w-60 p-2 opacity-0 shadow-lg transition group-[.open]:visible group-[.open]:opacity-100">
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        href={href(child.key)}
+                        class="tap w-full rounded px-3 hover:bg-paper"
+                        aria-current={isActive(child.key) ? 'page' : undefined}
+                      >
+                        {child.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={href(item.key)}
+                  class:list={[
+                    'tap rounded-full px-3 hover:bg-surface',
+                    isActive(item.key) && 'underline decoration-yellow decoration-[3px] underline-offset-8',
+                  ]}
+                  aria-current={isActive(item.key) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-1 sm:gap-2">
+      <LangSwitcher lang={lang} routeKey={routeKey} />
+      <a href={href('contact')} class="btn btn-primary hidden !min-h-11 !px-5 !py-2 text-sm sm:inline-flex">
+        {t.common.contact}
+      </a>
+      <button
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface lg:hidden"
+        aria-controls="menu-mobile"
+        aria-expanded="false"
+        data-menu-toggle
+        data-label-open={t.common.menuOpen}
+        data-label-close={t.common.menuClose}
+      >
+        <span class="sr-only" data-menu-label>{t.common.menuOpen}</span>
+        <Icon name="menu" />
+        <Icon name="close" class="hidden" />
+      </button>
+    </div>
+  </div>
+
+  <div id="menu-mobile" class="hidden border-t border-line bg-paper lg:hidden" data-menu>
+    <nav aria-label={t.common.navMobile} class="container-site py-4">
+      <ul class="divide-y divide-line/70 text-lg">
+        {
+          nav.flatMap((item) => ('children' in item ? item.children : [item])).map((item) => (
+            <li>
+              <a href={href(item.key)} class="block py-3" aria-current={isActive(item.key) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={href('contact')} class="block py-3" aria-current={isActive('contact') ? 'page' : undefined}>
+            {t.pages.contact}
+          </a>
+        </li>
+      </ul>
+      <a href={whatsappLink(t.whatsapp.default)} class="btn btn-primary mt-4 w-full" target="_blank" rel="noopener">
+        <Icon name="whatsapp" class="text-whatsapp" />
+        {t.common.whatsappCta}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Menu mobile
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  if (toggle && menu) {
+    const label = toggle.querySelector('[data-menu-label]');
+    const [iconOpen, iconClose] = toggle.querySelectorAll('svg');
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('hidden', !open);
+      iconOpen?.classList.toggle('hidden', open);
+      iconClose?.classList.toggle('hidden', !open);
+      if (label) label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+
+  // Sous-menu « Imprimés » (clic, survol, clavier)
+  document.querySelectorAll<HTMLButtonElement>('[data-dropdown]').forEach((btn) => {
+    const li = btn.parentElement!;
+    const set = (open: boolean) => {
+      li.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    };
+    btn.addEventListener('click', () => set(!li.classList.contains('open')));
+    li.addEventListener('mouseenter', () => set(true));
+    li.addEventListener('mouseleave', () => set(false));
+    li.addEventListener('focusout', (e) => {
+      if (!li.contains(e.relatedTarget as Node)) set(false);
+    });
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        set(false);
+        btn.focus();
+      }
+    });
+  });
+</script>

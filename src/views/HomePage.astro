@@ -1,0 +1,312 @@
+---
+// Page d'accueil (FR et EN) — AUCUNE mention géographique ici (le local passe par les pages villes).
+// Tous les textes viennent de src/i18n/fr.ts et src/i18n/en.ts.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import HeroVisual from '../components/HeroVisual.astro';
+import RealisationCard from '../components/RealisationCard.astro';
+import ProjectCtaCard from '../components/ProjectCtaCard.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Faq from '../components/Faq.astro';
+import Icon from '../components/Icon.astro';
+import { site, prices, packSeparateValue, whatsappLink } from '../data/site';
+import { realisations } from '../data/realisations';
+import { localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const h = t.home;
+const href = (key: RouteKey) => localePath(key, lang);
+const waDefault = whatsappLink(t.whatsapp.default);
+
+const services = [
+  { icon: 'web', ...h.services.items.website, href: href('website') },
+  {
+    icon: 'print',
+    ...h.services.items.prints,
+    href: href('businessCards'),
+    extra: [
+      { label: h.services.items.prints.extraFlyers, href: href('flyers') },
+      { label: h.services.items.prints.extraSigns, href: href('signs') },
+    ],
+  },
+  { icon: 'nfc', ...h.services.items.nfc, href: href('nfc') },
+  { icon: 'pen', ...h.services.items.logo, href: href('logo') },
+] as const;
+
+const reasonIcons = ['user', 'chat', 'globe', 'unlock'] as const;
+// 5 projets + la carte « Votre projet ici ? » = 6 cartes : grille complète en 2 et 3 colonnes.
+const featured = realisations.filter((r) => r.featured).slice(0, 5);
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: lang,
+  mainEntity: t.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout lang={lang} routeKey="home" title={h.title} description={h.description} areaServed="national" schema={[faqSchema]}>
+  <!-- 1. HERO -->
+  <section class="relative overflow-hidden">
+    <div class="container-site grid items-center gap-12 pb-16 pt-10 sm:pt-16 lg:grid-cols-2 lg:gap-[clamp(3rem,5vw,8rem)] lg:pb-[clamp(6rem,7vw,10rem)] lg:pt-[clamp(5rem,6vw,9rem)]">
+      <div>
+        <p class="eyebrow">{h.hero.eyebrow}</p>
+        <h1
+          class:list={[
+            'mt-4 font-semibold leading-[1.02]',
+            // Le titre anglais est ~10 % plus long : légèrement plus petit pour tenir sur 2 lignes.
+            lang === 'en' ? 'text-[clamp(48px,6vw,128px)]' : 'text-[clamp(48px,6.5vw,128px)]',
+          ]}
+        >
+          {h.hero.title.pre}<span class="hl">{h.hero.title.hl}</span><span class="text-red">.</span>
+        </h1>
+        <p class="measure mt-6 text-[clamp(1.125rem,1.15vw,1.625rem)] leading-relaxed text-muted">
+          {h.hero.subtitle}
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-hide-wa>
+          <a href={waDefault} class="btn btn-primary" target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="text-whatsapp" />
+            {t.common.whatsappCta}
+          </a>
+          <a href="#realisations" class="btn btn-secondary">{h.hero.ctaSecondary}</a>
+        </div>
+      </div>
+      <div class="mx-auto w-full max-w-[600px] lg:max-w-none">
+        <HeroVisual lang={lang} />
+      </div>
+    </div>
+
+    <!-- Bandeau de preuves -->
+    <div class="border-y border-line bg-surface/70">
+      <ul class="container-site flex flex-col gap-3 py-5 text-[0.95rem] font-medium lg:flex-row lg:items-center lg:justify-between">
+        <li class="flex items-center gap-2.5">
+          <Icon name="check" size={20} class="text-blue-dark" />
+          {h.hero.proofs[0]}
+        </li>
+        <li class="flex items-center gap-2.5">
+          <Icon name="globe" size={20} class="text-blue-dark" />
+          {h.hero.proofs[1]}
+        </li>
+        <li class="flex items-center gap-2.5">
+          <Icon name="whatsapp" size={20} class="text-[#128c7e]" />
+          {h.hero.proofs[2]}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. SERVICES -->
+  <section class="container-site py-20 lg:py-28" aria-labelledby="services-title">
+    <SectionHeading id="services-title" eyebrow={h.services.eyebrow} intro={h.services.intro}>
+      <Fragment slot="title">{h.services.title.pre}<span class="hl">{h.services.title.hl}</span></Fragment>
+    </SectionHeading>
+
+    <div class="mt-12 grid gap-8 sm:grid-cols-2 wide:grid-cols-4">
+      {
+        services.map((s, i) => (
+          <article class="card crop card-hover flex flex-col p-6 sm:p-8" data-reveal style={`--reveal-delay:${i * 70}ms`}>
+            <div class="flex items-start justify-between gap-4">
+              <span class="grid h-12 w-12 place-items-center rounded-full bg-blue-tint text-blue-dark">
+                <Icon name={s.icon} size={24} />
+              </span>
+              <p class="rounded-full bg-paper px-3 py-1 text-sm font-semibold">{s.price}</p>
+            </div>
+            <h3 class="mt-5 text-2xl font-semibold">{s.title}</h3>
+            <p class="measure mt-2 flex-1 leading-relaxed text-muted">{s.text}</p>
+            <div class="mt-4 flex flex-wrap items-center gap-x-5">
+              <a href={s.href} class="link tap gap-1.5">
+                {s.cta} <Icon name="arrow" size={18} />
+              </a>
+              {'extra' in s &&
+                s.extra.map((e) => (
+                  <a href={e.href} class="link tap">
+                    {e.label}
+                  </a>
+                ))}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <p class="mt-8 text-sm text-muted">
+      {`${t.common.netPrices} ${t.common.vatNotice}.`} <a href={href('pricing')} class="link">{h.services.allPrices}</a>
+    </p>
+  </section>
+
+  <!-- 3. PACK LANCEMENT -->
+  <section class="container-site" aria-labelledby="pack-title">
+    <div class="relative overflow-hidden rounded-xl bg-blue-dark text-white" data-reveal>
+      <div
+        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full border-[40px] border-white/[0.06]"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="relative grid gap-8 p-5 sm:gap-10 sm:p-12 lg:p-16 xl:grid-cols-[1.2fr_1fr] xl:items-center xl:gap-16 xl:p-20">
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-ink">
+            <span class="h-2 w-2 rounded-full bg-red"></span>
+            {h.pack.badge}
+          </p>
+          <h2 id="pack-title" class="mt-5 text-[2rem] font-semibold leading-[1.1] sm:text-5xl">
+            {h.pack.title}<span class="text-yellow">.</span>
+          </h2>
+          <p class="measure mt-4 text-lg leading-relaxed text-white/90">{h.pack.text}</p>
+        </div>
+        <div class="rounded-lg bg-white p-5 text-ink sm:p-8" data-hide-wa>
+          <ul class="space-y-3">
+            {
+              h.pack.items.map((item) => (
+                <li class="flex gap-3">
+                  <Icon name="check" size={22} class="mt-0.5 shrink-0 text-blue-dark" />
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="mt-6 border-t border-line pt-5">
+            {
+              prices.pack ? (
+                <p class="font-display text-4xl font-semibold">
+                  {t.price(prices.pack)}
+                  <span class="ml-2 align-middle font-sans text-base font-normal text-muted line-through">
+                    {t.price(packSeparateValue)}
+                  </span>
+                </p>
+              ) : (
+                <p class="text-muted">
+                  {h.pack.separately} <span class="font-semibold text-ink">{h.pack.separateValue}</span>.
+                  <br />
+                  {h.pack.askPrice}
+                </p>
+              )
+            }
+            <a href={whatsappLink(t.whatsapp.pack)} class="btn btn-primary mt-5 w-full" target="_blank" rel="noopener">
+              <Icon name="whatsapp" class="text-whatsapp" />
+              {h.pack.cta}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. RÉALISATIONS -->
+  <section id="realisations" class="container-site py-20 lg:py-28" aria-labelledby="real-title">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <SectionHeading id="real-title" eyebrow={h.work.eyebrow} intro={h.work.intro}>
+        <Fragment slot="title">{h.work.title.pre}<span class="hl">{h.work.title.hl}</span></Fragment>
+      </SectionHeading>
+      <a href={href('portfolio')} class="link tap shrink-0 gap-1.5 self-start sm:self-auto" data-reveal>
+        {h.work.all}
+        <Icon name="arrow" size={18} />
+      </a>
+    </div>
+    <div class="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        featured.map((item, i) => (
+          <div data-reveal style={`--reveal-delay:${(i % 3) * 70}ms`}>
+            <RealisationCard lang={lang} item={item} />
+          </div>
+        ))
+      }
+      <div data-reveal style={`--reveal-delay:${(featured.length % 3) * 70}ms`}>
+        <ProjectCtaCard lang={lang} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. MÉTHODE -->
+  <section class="border-y border-line bg-surface" aria-labelledby="method-title">
+    <div class="container-site py-20 lg:py-28">
+      <SectionHeading id="method-title" eyebrow={h.method.eyebrow} intro={h.method.intro}>
+        <Fragment slot="title">{h.method.title.pre}<span class="hl">{h.method.title.hl}</span></Fragment>
+      </SectionHeading>
+      <ol class="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-8">
+        {
+          h.method.steps.map((step, i) => (
+            <li class="relative" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+              <div class="flex items-center gap-4">
+                <span class="font-display text-6xl font-semibold leading-none text-blue">{i + 1}</span>
+                {i < h.method.steps.length - 1 && (
+                  <span class="hidden h-px flex-1 border-t border-dashed border-ink/30 lg:block" aria-hidden="true" />
+                )}
+              </div>
+              <h3 class="mt-5 text-xl font-semibold sm:text-2xl">{step.title}</h3>
+              <p class="measure mt-2 leading-relaxed text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 6. POURQUOI MTWEB -->
+  <section class="container-site py-20 lg:py-28" aria-labelledby="why-title">
+    <SectionHeading id="why-title" eyebrow={h.why.eyebrow}>
+      <Fragment slot="title">{h.why.title.pre}<span class="hl">{h.why.title.hl}</span></Fragment>
+    </SectionHeading>
+    <div class="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 wide:grid-cols-4">
+      {
+        h.why.reasons.map((r, i) => (
+          <div class="flex gap-5" data-reveal style={`--reveal-delay:${(i % 2) * 70}ms`}>
+            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-line bg-surface text-blue-dark">
+              <Icon name={reasonIcons[i]} size={24} />
+            </span>
+            <div>
+              <h3 class="text-xl font-semibold">{r.title}</h3>
+              <p class="measure mt-1.5 leading-relaxed text-muted">{r.text}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 7. FAQ -->
+  <section class="container-site pb-20 lg:pb-28" aria-labelledby="faq-title">
+    <SectionHeading id="faq-title" eyebrow={h.faq.eyebrow} intro={h.faq.intro}>
+      <Fragment slot="title">{h.faq.title.pre}<span class="hl">{h.faq.title.hl}</span></Fragment>
+    </SectionHeading>
+    <div class="mt-10" data-hide-wa>
+      <Faq items={t.faq} />
+    </div>
+  </section>
+
+  <!-- 8. CONTACT -->
+  <section id="contact" class="container-site" aria-labelledby="contact-title" data-hide-wa>
+    <SectionHeading id="contact-title" eyebrow={h.contact.eyebrow} intro={h.contact.intro}>
+      <Fragment slot="title">{h.contact.title.pre}<span class="hl">{h.contact.title.hl}</span></Fragment>
+    </SectionHeading>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.35fr]">
+      <div class="flex flex-col gap-8 self-start rounded-xl bg-ink p-8 text-white sm:p-10" data-reveal>
+        <div>
+          <Icon name="whatsapp" size={44} class="text-whatsapp" />
+          <h3 class="mt-5 text-3xl font-semibold">{h.contact.cardTitle}</h3>
+          <p class="mt-3 leading-relaxed text-white/85">{t.common.hours}.</p>
+        </div>
+        <div class="space-y-4">
+          <a href={waDefault} class="btn w-full bg-white text-ink hover:bg-paper" target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="text-[#128c7e]" />
+            {t.common.whatsappCta}
+          </a>
+          <a href={site.phoneHref} class="tap w-full justify-center gap-2 text-white/90 hover:text-white hover:underline">
+            <Icon name="phone" size={18} />
+            {site.phone}
+          </a>
+        </div>
+      </div>
+      <div class="card crop p-6 sm:p-10" data-reveal style="--reveal-delay:80ms">
+        <ContactForm lang={lang} idPrefix="home" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

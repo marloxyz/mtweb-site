@@ -1,0 +1,88 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, whatsappLink } from '../data/site';
+import { localePath, targetLang, useTranslations, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+
+// Un lien vers une page qui n'existe qu'en français est marqué « (FR) » depuis la version anglaise.
+const link = (key: RouteKey) => {
+  const target = targetLang(key, lang);
+  return { href: localePath(key, lang), label: t.pages[key], foreign: target !== lang ? target : undefined };
+};
+
+const columns: { title: string; keys: RouteKey[] }[] = [
+  { title: t.footer.services, keys: ['website', 'businessCards', 'flyers', 'signs', 'logo', 'nfc'] },
+  { title: t.footer.company, keys: ['portfolio', 'pricing', 'contact'] },
+  { title: t.footer.zones, keys: ['nice', 'avignon', 'paca'] },
+];
+const legal = (['legal', 'privacy', 'terms'] as RouteKey[]).map(link);
+---
+
+<footer class="mt-24 border-t border-line bg-surface" data-hide-wa>
+  <div class="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
+    <div>
+      <Logo width={140} class="h-auto w-[140px]" />
+      <p class="mt-4 max-w-xs text-muted">{t.common.tagline}</p>
+      <ul class="mt-5 text-[0.95rem]">
+        <li>
+          <a href={whatsappLink(t.whatsapp.default)} class="tap gap-2 hover:underline" target="_blank" rel="noopener">
+            <Icon name="whatsapp" size={18} class="text-[#128c7e]" /> WhatsApp
+          </a>
+        </li>
+        <li>
+          <a href={site.phoneHref} class="tap gap-2 hover:underline">
+            <Icon name="phone" size={18} />
+            {site.phone}
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${site.email}`} class="tap gap-2 hover:underline">
+            <Icon name="mail" size={18} />
+            {site.email}
+          </a>
+        </li>
+      </ul>
+    </div>
+    {
+      columns.map((col) => (
+        <nav aria-label={col.title}>
+          <h2 class="font-sans text-sm font-semibold uppercase tracking-[0.12em] text-ink">{col.title}</h2>
+          <ul class="mt-3 text-[0.95rem] text-muted">
+            {col.keys.map(link).map((l) => (
+              <li>
+                <a href={l.href} hreflang={l.foreign} class="tap hover:text-ink hover:underline">
+                  {l.label}
+                  {l.foreign && <span class="ml-1 text-xs">({l.foreign.toUpperCase()})</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+  <div class="border-t border-line">
+    <div class="container-site flex flex-col gap-3 pb-24 pt-6 text-sm text-muted sm:pb-6 xl:flex-row xl:items-center xl:justify-between">
+      <p>© {year} MTWeb · {site.owner}, {t.common.legalStatus} · {t.common.vatNotice}</p>
+      <ul class="flex flex-wrap gap-x-5">
+        {
+          legal.map((l) => (
+            <li>
+              <a href={l.href} hreflang={l.foreign} class="tap hover:text-ink hover:underline">
+                {l.label}
+                {l.foreign && <span class="ml-1 text-xs">({l.foreign.toUpperCase()})</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

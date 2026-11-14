@@ -1,0 +1,31 @@
+---
+// Page 404 (FR et EN). Cloudflare Pages sert /en/404.html pour les URLs inconnues sous /en/.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { whatsappLink } from '../data/site';
+import { localePath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = t.notFound;
+---
+
+<BaseLayout lang={lang} routeKey="notFound" title={p.title} description={p.description} noindex>
+  <section class="container-site flex flex-col items-start py-24 sm:py-32">
+    <p class="eyebrow">{p.eyebrow}</p>
+    <h1 class="mt-4 text-5xl font-semibold leading-tight sm:text-6xl">
+      {p.heading.pre}<span class="hl">{p.heading.hl}</span><span class="text-red">.</span>
+    </h1>
+    <p class="measure mt-6 text-lg text-muted">{p.text}</p>
+    <div class="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row" data-hide-wa>
+      <a href={localePath('home', lang)} class="btn btn-primary">{p.back}</a>
+      <a href={whatsappLink(t.whatsapp.default)} class="btn btn-secondary" target="_blank" rel="noopener">
+        <Icon name="whatsapp" class="text-[#128c7e]" />
+        {t.common.whatsappCta}
+      </a>
+    </div>
+  </section>
+</BaseLayout>

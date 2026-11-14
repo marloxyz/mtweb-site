@@ -1,0 +1,148 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import { site } from '../data/site';
+import {
+  alternates,
+  defaultLang,
+  languages,
+  localePath,
+  useTranslations,
+  type Lang,
+  type RouteKey,
+} from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Clé de la page dans src/i18n/routes.ts : sert au canonical, au hreflang et au sélecteur de langue. */
+  routeKey: RouteKey;
+  title: string;
+  description: string;
+  ogImage?: string;
+  noindex?: boolean;
+  /** Zones desservies dans le schéma. Accueil : France uniquement (aucune ville). */
+  areaServed?: 'national' | 'local';
+  /** Schémas JSON-LD supplémentaires (FAQPage, Service…). */
+  schema?: Record<string, unknown>[];
+}
+
+const {
+  lang,
+  routeKey,
+  title,
+  description,
+  ogImage = '/og-image.png',
+  noindex = false,
+  areaServed = 'local',
+  schema = [],
+} = Astro.props;
+
+const t = useTranslations(lang);
+const abs = (path: string) => `${site.url}${path}`; // racine : https://mtwebpro.fr/
+const canonical = abs(localePath(routeKey, lang));
+const ogImageUrl = new URL(ogImage, site.url).href;
+
+// hreflang : toutes les versions existantes de la page + x-default (français).
+const alts = noindex ? [] : alternates(routeKey);
+const xDefault = alts.find((a) => a.lang === defaultLang);
+const otherLocales = alts.filter((a) => a.lang !== lang).map((a) => languages[a.lang].ogLocale);
+
+const areas =
+  areaServed === 'national'
+    ? [{ '@type': 'Country', name: 'France' }]
+    : [
+        { '@type': 'Country', name: 'France' },
+        { '@type': 'AdministrativeArea', name: 'Provence-Alpes-Côte d’Azur' },
+        { '@type': 'City', name: 'Nice' },
+        { '@type': 'City', name: 'Avignon' },
+      ];
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': `${site.url}/#mtweb`,
+  name: site.name,
+  url: abs(localePath('home', lang)),
+  logo: `${site.url}/logo.png`,
+  image: ogImageUrl,
+  description: t.meta.businessDescription,
+  telephone: site.phone.replace(/\s/g, ''),
+  email: site.email,
+  priceRange: '€70 – €449',
+  founder: { '@type': 'Person', name: site.owner },
+  areaServed: areas,
+  knowsLanguage: ['fr', 'en'],
+  ...(site.socials.length ? { sameAs: site.socials.map((s) => s.href) } : {}),
+};
+
+const jsonLd = [business, ...schema];
+---
+
+<!doctype html>
+<html lang={languages[lang].htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {alts.map((a) => <link rel="alternate" hreflang={languages[a.lang].hreflang} href={abs(a.path)} />)}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={abs(xDefault.path)} />}
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#F4EFE6" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={languages[lang].ogLocale} />
+    {otherLocales.map((l) => <meta property="og:locale:alternate" content={l} />)}
+    <meta property="og:site_name" content="MTWeb" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <Header lang={lang} routeKey={routeKey} />
+    <main id="contenu" class="flex-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <WhatsAppFloat lang={lang} />
+
+    <script>
+      // Apparition douce au scroll (désactivée par CSS si prefers-reduced-motion)
+      const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px' },
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>

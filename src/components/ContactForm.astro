@@ -1,0 +1,108 @@
+---
+// Formulaire court envoyé via Web3Forms.
+// Clé d'accès : variable d'environnement PUBLIC_WEB3FORMS_KEY (fichier .env en local,
+// variables d'environnement du projet sur Cloudflare Pages).
+// La clé Web3Forms est conçue pour être publique : elle n'autorise que l'envoi vers votre boîte.
+import { localePath, targetLang, useTranslations, type Lang } from '../i18n';
+
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+interface Props {
+  lang: Lang;
+  idPrefix?: string;
+}
+const { lang, idPrefix = 'cf' } = Astro.props;
+const t = useTranslations(lang);
+const id = (s: string) => `${idPrefix}-${s}`;
+const privacyLang = targetLang('privacy', lang);
+---
+
+<form
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  class="space-y-4"
+  data-contact-form
+  data-msg-sending={t.form.sending}
+  data-msg-success={t.form.success}
+  data-msg-error={t.form.error}
+  novalidate
+>
+  <input type="hidden" name="access_key" value={accessKey} />
+  <input type="hidden" name="subject" value={t.form.subject} />
+  <input type="hidden" name="from_name" value="Site MTWeb" />
+  <!-- Anti-spam : champ invisible que les robots remplissent -->
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+  <div>
+    <label for={id('name')} class="mb-1.5 block font-medium">{t.form.name}</label>
+    <input id={id('name')} name="name" type="text" autocomplete="name" required class="field" />
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label for={id('phone')} class="mb-1.5 block font-medium">{t.form.phone}</label>
+      <input id={id('phone')} name="phone" type="tel" autocomplete="tel" inputmode="tel" required class="field" />
+    </div>
+    <div>
+      <label for={id('email')} class="mb-1.5 block font-medium">
+        {t.form.email} <span class="font-normal text-muted">{t.form.optional}</span>
+      </label>
+      <input id={id('email')} name="email" type="email" autocomplete="email" class="field" />
+    </div>
+  </div>
+  <div>
+    <label for={id('message')} class="mb-1.5 block font-medium">{t.form.message}</label>
+    <textarea id={id('message')} name="message" rows="4" required class="field resize-y"></textarea>
+  </div>
+
+  <p class="measure text-sm text-muted">
+    {t.form.privacyNote}{' '}
+    <a href={localePath('privacy', lang)} hreflang={privacyLang !== lang ? privacyLang : undefined} class="link font-medium"
+      >{t.pages.privacy}{privacyLang !== lang && ` (${privacyLang.toUpperCase()})`}</a
+    >
+  </p>
+
+  <button type="submit" class="btn btn-blue w-full sm:w-auto">{t.form.submit}</button>
+  <p class="min-h-6 text-[0.95rem] font-medium" role="status" aria-live="polite" data-form-status></p>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const { msgSending = '', msgSuccess = '', msgError = '' } = form.dataset;
+    const setStatus = (msg: string, ok: boolean) => {
+      status.textContent = msg;
+      status.style.color = ok ? '#1e6b3a' : '#a3241f';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      button.disabled = true;
+      const label = button.textContent;
+      button.textContent = msgSending;
+      status.textContent = '';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success !== false) {
+          form.reset();
+          setStatus(msgSuccess, true);
+        } else {
+          throw new Error(data.message || 'Error');
+        }
+      } catch {
+        setStatus(msgError, false);
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  });
+</script>

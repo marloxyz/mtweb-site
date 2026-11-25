@@ -255,3 +255,67 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Pages légales (Markdown) */
+@layer components {
+  .prose-legal {
+    max-width: 46rem;
+    line-height: 1.7;
+  }
+  .prose-legal > * + * {
+    margin-top: 1rem;
+  }
+  .prose-legal h2 {
+    margin-top: 3rem;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .prose-legal h3 {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .prose-legal ul,
+  .prose-legal ol {
+    padding-left: 1.4rem;
+  }
+  .prose-legal ul {
+    list-style: disc;
+  }
+  .prose-legal ol {
+    list-style: decimal;
+  }
+  .prose-legal li + li {
+    margin-top: 0.35rem;
+  }
+  .prose-legal a {
+    color: var(--color-blue-dark);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-legal strong {
+    font-weight: 600;
+  }
+  .prose-legal table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .prose-legal th,
+  .prose-legal td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.75rem 1rem 0.75rem 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose-legal td:last-child,
+  .prose-legal th:last-child {
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 0;
+  }
+}

@@ -207,7 +207,7 @@ export const servicesFr: Record<ServiceKey, ServiceContent> = {
       eyebrow: 'Flyers',
       heading: { pre: 'Un flyer ', hl: 'qu’on lit' },
       intro: 'Pour une ouverture, une offre ou un événement : un flyer clair, qui donne envie de venir. On le crée, on l’imprime.',
-      priceTag: 'Sur devis', // prix d'appel À CONFIRMER
+      priceTag: 'Sur devis',
       visualAlt: 'Exemple de flyer réalisé par MTWeb',
     },
     offers: {
@@ -413,7 +413,6 @@ export const servicesFr: Record<ServiceKey, ServiceContent> = {
           cta: 'Demander cette formule',
         },
         {
-          // Prix de la carte seule : À CONFIRMER.
           name: 'Vous avez déjà un site ?',
           price: 'Sur demande',
           items: ['Écrivez-nous pour le prix de la carte NFC seule'],

@@ -3,7 +3,7 @@ import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import LangSwitcher from './LangSwitcher.astro';
 import { whatsappLink } from '../data/site';
-import { localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
+import { isPublished, localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -14,7 +14,7 @@ const t = useTranslations(lang);
 
 type Item = { label: string; key: RouteKey };
 type Group = { label: string; children: Item[] };
-const nav: (Item | Group)[] = [
+const allNav: (Item | Group)[] = [
   { label: t.nav.website, key: 'website' },
   {
     label: t.nav.prints,
@@ -29,6 +29,8 @@ const nav: (Item | Group)[] = [
   { label: t.pages.portfolio, key: 'portfolio' },
   { label: t.pages.pricing, key: 'pricing' },
 ];
+// Pages pas encore publiées (src/i18n/routes.ts) : retirées du menu.
+const nav = allNav.filter((item) => 'children' in item || isPublished(item.key));
 const href = (key: RouteKey) => localePath(key, lang);
 const isActive = (key: RouteKey) => key === routeKey;
 ---

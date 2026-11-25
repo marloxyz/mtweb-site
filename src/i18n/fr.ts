@@ -2,6 +2,7 @@
 // Le dictionnaire anglais (en.ts) doit avoir exactement la même structure : TypeScript le vérifie.
 // Les titres avec surlignage jaune sont découpés en { pre, hl } : « pre » + mot surligné + point rouge.
 import { prices, packSeparateValue } from '../data/site';
+import type { RouteKey } from './routes';
 import { serviceUiFr, servicesFr } from './services.fr';
 
 const price = (n: number) => `${n.toLocaleString('fr-FR')} €`;
@@ -21,7 +22,7 @@ export const fr = {
     newWindow: 'nouvelle fenêtre',
     frenchOnly: 'en français',
     tagline: 'Un seul interlocuteur pour être visible, en ligne et dans la rue.',
-    hours: 'Disponible 7j/7, réponse rapide sur WhatsApp', // À CONFIRMER
+    hours: 'Disponible 24h/24, 7j/7, réponse rapide sur WhatsApp',
     vatNotice: 'TVA non applicable, art. 293 B du CGI',
     netPrices: 'Prix nets.',
     legalStatus: 'entrepreneur individuel',
@@ -57,7 +58,7 @@ export const fr = {
     notFound: 'Page introuvable',
     nice: 'Création site web Nice',
     avignon: 'Création site web Avignon',
-    paca: 'Agence web et print PACA',
+    paca: 'Agence web et impression PACA',
     legal: 'Mentions légales',
     privacy: 'Politique de confidentialité',
     terms: 'CGV',
@@ -82,7 +83,7 @@ export const fr = {
   },
 
   heroVisual: {
-    cardRole: 'Création web et print',
+    cardRole: 'Création web et imprimés',
     nfcHint: ['Approchez', 'votre téléphone'],
   },
 
@@ -100,7 +101,7 @@ export const fr = {
     error: 'L’envoi n’a pas fonctionné. Écrivez-nous directement sur WhatsApp, c’est encore plus rapide.',
   },
 
-  // Questions fréquentes. Les réponses marquées « À CONFIRMER » reposent sur des hypothèses.
+  // Questions fréquentes. Domaine : CGV art. 11 ; résiliation : art. 10.5 ; délais d'impression : art. 14.4.
   faq: [
     {
       id: 'delay72',
@@ -115,14 +116,12 @@ export const fr = {
     {
       id: 'domain',
       q: 'À qui appartient le nom de domaine ?',
-      // À CONFIRMER : domaine enregistré au nom du client.
-      a: 'À vous. Le nom de domaine (votre adresse, du type votre-nom.fr) est enregistré à votre nom. Vous en restez propriétaire, quoi qu’il arrive.',
+      a: 'Il est réservé à votre seul usage. MTWeb enregistre et gère votre nom de domaine (votre adresse, du type votre-nom.fr) pour vous. Si vous le souhaitez, il est enregistré directement à votre nom dès la commande : vous en êtes alors titulaire. Et si vous partez un jour, il vous est transféré sans frais.',
     },
     {
       id: 'cancel',
       q: 'Que se passe-t-il si j’arrête l’abonnement ?',
-      // À CONFIRMER : conditions de sortie.
-      a: 'Il est sans engagement : vous arrêtez quand vous voulez, par simple message. Votre site n’est alors plus hébergé par MTWeb. Vous gardez votre nom de domaine, et nous pouvons vous transmettre les fichiers du site pour le confier à quelqu’un d’autre.',
+      a: 'Il est sans engagement : vous l’arrêtez quand vous voulez, par e-mail, courrier ou simple message WhatsApp. L’arrêt prend effet à la fin du mois en cours (le mois commencé reste dû). Sous 15 jours, on vous transfère votre nom de domaine sans frais et on vous remet les fichiers de votre site, pour le confier à qui vous voulez.',
     },
     {
       id: 'files',
@@ -132,8 +131,7 @@ export const fr = {
     {
       id: 'printDelay',
       q: 'Quels sont les délais d’impression et de livraison ?',
-      // À CONFIRMER : délais réels de l’imprimeur.
-      a: 'Comptez en général une semaine entre la validation du BAT et la réception, selon le support et la quantité. Pour une date précise (ouverture, salon, événement), dites-le dès le départ : on s’organise en conséquence.',
+      a: 'L’impression est confiée à un imprimeur partenaire. Le délai de fabrication et de livraison vous est indiqué avec le BAT. Il démarre dès que le BAT est validé et l’acompte reçu. Vos imprimés vous sont remis en main propre ou livrés chez vous (frais de port indiqués au devis). Pour une date précise (ouverture, salon, événement), dites-le dès le départ : on s’organise en conséquence.',
     },
     {
       id: 'remote',
@@ -152,7 +150,7 @@ export const fr = {
     title: 'Création de site vitrine, logo, cartes de visite et flyers | MTWeb',
     description: `Site vitrine dès ${price(prices.site)}, logo ${price(prices.logo)}, cartes de visite, flyers et panneaux publicitaires. Un seul interlocuteur, première version en ligne sous 72 h.`,
     hero: {
-      eyebrow: 'Création web et print',
+      eyebrow: 'Création web et imprimés',
       title: { pre: 'Visible en ligne ', hl: 'et dans la rue' },
       subtitle: 'Sites web, logos, cartes de visite, flyers et panneaux, conçus par un seul interlocuteur.',
       ctaSecondary: 'Voir les réalisations',
@@ -272,6 +270,102 @@ export const fr = {
   // Pages services (contenus dans services.fr.ts)
   serviceUi: serviceUiFr,
   services: servicesFr,
+
+  contactPage: {
+    title: 'Contact : un message sur WhatsApp ou par formulaire | MTWeb',
+    description:
+      'Un projet de site, de logo ou d’imprimés ? Écrivez sur WhatsApp, appelez ou remplissez le formulaire. Réponse rapide, 24h/24, 7j/7.',
+    eyebrow: 'Contact',
+    heading: { pre: 'Parlons de ', hl: 'votre projet' },
+    intro: 'Un message suffit pour démarrer. Dites-nous ce dont vous avez besoin : on vous répond vite, avec un prix clair.',
+    whatsappTitle: 'Le plus rapide : WhatsApp',
+    whatsappText: 'Un message, une photo, un vocal : c’est le moyen le plus simple pour échanger.',
+    phoneLabel: 'Téléphone',
+    emailLabel: 'E-mail',
+    formTitle: 'Vous préférez écrire ?',
+    formIntro: 'Laissez votre nom, votre numéro et quelques mots sur votre projet. On vous rappelle ou on vous écrit.',
+    nextTitle: 'Et ensuite ?',
+    next: [
+      'On vous répond rapidement pour faire le point.',
+      'Vous recevez un prix clair, sans surprise.',
+      'On se rencontre ou on se voit en visio, et c’est parti.',
+    ],
+  },
+
+  pricingPage: {
+    title: `Tarifs : site vitrine dès ${price(prices.site)}, logo ${price(prices.logo)}, cartes de visite | MTWeb`,
+    description: `Tous les prix MTWeb sur une page : site vitrine dès ${price(prices.site)}, site + carte NFC ${price(prices.siteNfc)}, logo ${price(prices.logo)}, 500 cartes de visite ${price(prices.businessCards)}. Prix nets, sans surprise.`,
+    eyebrow: 'Tarifs',
+    heading: { pre: 'Des prix ', hl: 'clairs' },
+    intro: 'Tous nos prix sur une seule page. Prix nets, sans frais cachés. Pour un besoin particulier, on vous fait un devis rapide.',
+    tableCaption: 'Tarifs MTWeb, à partir de',
+    colService: 'Prestation',
+    colIncluded: 'Ce qui est inclus',
+    colPrice: 'À partir de',
+    details: 'Voir le détail',
+    rows: [
+      {
+        key: 'website',
+        name: 'Site vitrine (1 à 5 pages)',
+        included:
+          'Lisible sur téléphone, formulaire de contact, bouton d’appel, plan Google Maps, référencement de base',
+        price: price(prices.site),
+      },
+      {
+        key: 'nfc',
+        name: 'Site vitrine + carte NFC avis Google',
+        included: 'Le site vitrine, plus une carte NFC reliée à votre page d’avis Google, configurée et testée',
+        price: price(prices.siteNfc),
+      },
+      {
+        key: 'logo',
+        name: 'Logo',
+        included: '2 propositions, 2 retouches, fichiers PNG, SVG et favicon',
+        price: price(prices.logo),
+      },
+      {
+        key: 'businessCards',
+        name: 'Cartes de visite, 500 ex. recto-verso',
+        included: `Impression de votre fichier. Création graphique : + ${price(prices.businessCardsDesign)}`,
+        price: price(prices.businessCards),
+      },
+      {
+        key: 'flyers',
+        name: 'Flyers',
+        included: 'Création ou impression de votre fichier, format et quantité au choix',
+        price: 'Sur devis',
+      },
+      {
+        key: 'signs',
+        name: 'Panneaux publicitaires',
+        included: 'Création et impression. Pose non comprise',
+        price: 'Sur devis',
+      },
+      {
+        key: 'nfc',
+        name: 'Carte NFC avis Google seule',
+        included: 'Pour ceux qui ont déjà un site',
+        price: 'Sur demande',
+      },
+    ] as { key: RouteKey; name: string; included: string; price: string }[],
+    hosting: {
+      title: 'L’hébergement est à part',
+      text: `Le prix du site couvre sa création. Pour qu’il reste en ligne, l’abonnement hébergement et maintenance coûte ${price(prices.hostingMonthly)} par mois. Les ${prices.hostingFreeMonths} premiers mois sont offerts.`,
+      price: `${price(prices.hostingMonthly)} / mois`,
+      items: [
+        'Hébergement, sécurité (HTTPS) et sauvegardes',
+        'Nom de domaine et son renouvellement',
+        `${prices.hostingEditMinutes} minutes de modifications par mois`,
+        `Les ${prices.hostingFreeMonths} premiers mois offerts`,
+        'Sans engagement : vous arrêtez quand vous voulez',
+      ],
+    },
+    packTitle: 'Pack Lancement : site + logo + 500 cartes',
+    packText: 'Tout pour démarrer, pensé ensemble. Demandez le prix du pack sur WhatsApp.',
+    packCta: 'Voir le Pack Lancement',
+    quoteTitle: 'Un besoin particulier ?',
+    quoteText: 'Pages en plus, autre support, grande quantité : décrivez votre projet, on vous fait un devis clair.',
+  },
 
   notFound: {
     title: 'Page introuvable | MTWeb',

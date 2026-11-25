@@ -1,6 +1,5 @@
 // Données centrales indépendantes de la langue : coordonnées et tarifs.
 // Tous les textes affichés sont dans src/i18n/fr.ts et src/i18n/en.ts.
-// Les valeurs marquées « À CONFIRMER » viennent du CLAUDE.md et doivent être validées.
 
 export const site = {
   name: 'MTWeb',
@@ -9,8 +8,12 @@ export const site = {
   phone: '+33 6 34 41 86 16',
   phoneHref: 'tel:+33634418616',
   whatsappNumber: '33634418616',
-  email: 'contact@mtwebpro.fr', // À CONFIRMER
-  socials: [] as { label: string; href: string }[], // À CONFIRMER
+  email: 'contact@mtwebpro.fr',
+  socials: [] as { label: string; href: string }[],
+  // Mentions légales et CGV
+  siren: '895 176 915',
+  /** Adresse postale : affichée uniquement dans les mentions légales et les CGV. */
+  address: '[ADRESSE À COMPLÉTER]',
 };
 
 /** Lien WhatsApp avec message pré-rempli (le message vient du dictionnaire de la langue). */
@@ -28,7 +31,7 @@ export const prices = {
   hostingMonthly: 20,
   hostingFreeMonths: 2,
   hostingEditMinutes: 30,
-  /** Prix du Pack Lancement : À CONFIRMER. Laisser `null` tant qu'il n'est pas fixé. */
+  /** Prix du Pack Lancement : `null` = « Demandez le prix » sur WhatsApp. */
   pack: null as number | null,
 };
 

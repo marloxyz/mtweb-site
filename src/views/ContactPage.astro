@@ -1,0 +1,105 @@
+---
+// Page Contact (FR et EN) : WhatsApp en priorité, téléphone, e-mail et formulaire court.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Icon from '../components/Icon.astro';
+import TitleText from '../components/TitleText.astro';
+import { site, whatsappLink } from '../data/site';
+import { localePath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = t.contactPage;
+const abs = (path: string) => `${site.url}${path}`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: p.title,
+    url: abs(localePath('contact', lang)),
+    inLanguage: lang,
+    about: { '@id': `${site.url}/#mtweb` },
+  },
+];
+---
+
+<BaseLayout lang={lang} routeKey="contact" title={p.title} description={p.description} schema={schema}>
+  <section class="container-site pb-16 pt-8 sm:pt-12 lg:pb-24 lg:pt-16">
+    <nav aria-label={t.serviceUi.breadcrumb} class="text-sm text-muted">
+      <ol class="flex flex-wrap items-center gap-1">
+        <li><a href={localePath('home', lang)} class="tap hover:text-ink hover:underline">{t.common.breadcrumbHome}</a></li>
+        <li aria-hidden="true" class="px-1">/</li>
+        <li aria-current="page" class="font-medium text-ink">{t.pages.contact}</li>
+      </ol>
+    </nav>
+    <p class="eyebrow mt-4">{p.eyebrow}</p>
+    <h1 class="mt-4 text-[clamp(40px,5vw,96px)] font-semibold leading-[1.04]">
+      <TitleText title={p.heading} />
+    </h1>
+    <p class="measure mt-6 text-[clamp(1.125rem,1.1vw,1.5rem)] leading-relaxed text-muted">{p.intro}</p>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.35fr]" data-hide-wa>
+      <div class="flex flex-col gap-8 self-start">
+        <div class="flex flex-col gap-6 rounded-xl bg-ink p-8 text-white sm:p-10" data-reveal>
+          <Icon name="whatsapp" size={44} class="text-whatsapp" />
+          <div>
+            <h2 class="text-3xl font-semibold">{p.whatsappTitle}</h2>
+            <p class="mt-3 leading-relaxed text-white/85">{p.whatsappText}</p>
+            <p class="mt-2 leading-relaxed text-white/85">{t.common.hours}.</p>
+          </div>
+          <a href={whatsappLink(t.whatsapp.default)} class="btn w-full bg-white text-ink hover:bg-paper" target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="text-[#128c7e]" />
+            {t.common.whatsappCta}
+          </a>
+        </div>
+
+        <ul class="card divide-y divide-line px-6 sm:px-8" data-reveal>
+          <li class="flex items-center gap-4 py-4">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-tint text-blue-dark">
+              <Icon name="phone" size={20} />
+            </span>
+            <div>
+              <p class="text-sm text-muted">{p.phoneLabel}</p>
+              <a href={site.phoneHref} class="link font-semibold">{site.phone}</a>
+            </div>
+          </li>
+          <li class="flex items-center gap-4 py-4">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-tint text-blue-dark">
+              <Icon name="mail" size={20} />
+            </span>
+            <div>
+              <p class="text-sm text-muted">{p.emailLabel}</p>
+              <a href={`mailto:${site.email}`} class="link font-semibold">{site.email}</a>
+            </div>
+          </li>
+        </ul>
+
+        <div data-reveal>
+          <h2 class="text-2xl font-semibold">{p.nextTitle}</h2>
+          <ol class="mt-5 space-y-4">
+            {
+              p.next.map((step, i) => (
+                <li class="flex gap-4">
+                  <span class="font-display text-3xl font-semibold leading-none text-blue">{i + 1}</span>
+                  <span class="leading-relaxed">{step}</span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+
+      <div class="card crop self-start p-6 sm:p-10" data-reveal style="--reveal-delay:80ms">
+        <h2 class="text-3xl font-semibold">{p.formTitle}</h2>
+        <p class="measure mt-3 leading-relaxed text-muted">{p.formIntro}</p>
+        <div class="mt-8">
+          <ContactForm lang={lang} idPrefix="contact" />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

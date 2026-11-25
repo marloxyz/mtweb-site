@@ -1,6 +1,7 @@
 // English texts. Same structure as fr.ts (enforced by the `Dict` type).
 // Prices are identical to the French version; only the formatting changes (€399).
 import { prices, packSeparateValue } from '../data/site';
+import type { RouteKey } from './routes';
 import type { Dict } from './fr';
 import { serviceUiEn, servicesEn } from './services.en';
 
@@ -21,7 +22,7 @@ export const en: Dict = {
     newWindow: 'new window',
     frenchOnly: 'in French',
     tagline: 'One single point of contact to be seen, online and on the street.',
-    hours: 'Available 7 days a week, quick replies on WhatsApp', // TO CONFIRM
+    hours: 'Available 24/7, quick replies on WhatsApp',
     vatNotice: 'VAT not applicable, article 293 B of the French Tax Code (CGI)',
     netPrices: 'Net prices.',
     legalStatus: 'sole trader (entrepreneur individuel)',
@@ -113,12 +114,12 @@ export const en: Dict = {
     {
       id: 'domain',
       q: 'Who owns the domain name?',
-      a: 'You do. The domain name (your web address, like your-name.com) is registered in your name. It stays yours, whatever happens.',
+      a: 'It’s for your use only. MTWeb registers and manages your domain name (your web address, like your-name.com) for you. If you wish, it’s registered in your name from the start: you are then its legal holder. And if you ever leave, it’s transferred to you free of charge.',
     },
     {
       id: 'cancel',
       q: 'What happens if I cancel the plan?',
-      a: 'There’s no commitment: you can stop anytime with a simple message. Your website is then no longer hosted by MTWeb. You keep your domain name, and we can send you the website files so someone else can take over.',
+      a: 'There’s no commitment: you can stop anytime, by email, post or a simple WhatsApp message. It takes effect at the end of the current month (a month already started is still due). Within 15 days, we transfer your domain name to you free of charge and hand over your website files, so anyone you like can take over.',
     },
     {
       id: 'files',
@@ -128,7 +129,7 @@ export const en: Dict = {
     {
       id: 'printDelay',
       q: 'How long do printing and delivery take?',
-      a: 'Usually about a week between proof approval and delivery, depending on the item and the quantity. Working to a date (opening, trade show, event)? Tell us at the start and we’ll plan around it.',
+      a: 'Printing is handled by a partner printer. You get the production and delivery time along with the proof. It starts as soon as the proof is approved and the deposit received. Your prints are handed to you in person or delivered to your door (shipping costs shown on the quote). Working to a date (opening, trade show, event)? Tell us at the start and we’ll plan around it.',
     },
     {
       id: 'remote',
@@ -266,6 +267,101 @@ export const en: Dict = {
 
   serviceUi: serviceUiEn,
   services: servicesEn,
+
+  contactPage: {
+    title: 'Contact: a WhatsApp message or the contact form | MTWeb',
+    description:
+      'A website, logo or print project? Message us on WhatsApp, call, or fill in the form. Quick replies, 24/7.',
+    eyebrow: 'Contact',
+    heading: { pre: 'Let’s talk about ', hl: 'your project' },
+    intro: 'One message is all it takes to get started. Tell us what you need: we’ll reply quickly, with a clear price.',
+    whatsappTitle: 'Quickest: WhatsApp',
+    whatsappText: 'A message, a photo, a voice note: it’s the easiest way to talk.',
+    phoneLabel: 'Phone',
+    emailLabel: 'Email',
+    formTitle: 'Prefer to write?',
+    formIntro: 'Leave your name, your number and a few words about your project. We’ll call or write back.',
+    nextTitle: 'What happens next?',
+    next: [
+      'We get back to you quickly to talk it through.',
+      'You get a clear price, with no surprises.',
+      'We meet in person or on a video call, and off we go.',
+    ],
+  },
+
+  pricingPage: {
+    title: `Pricing: small business website from ${price(prices.site)}, logo ${price(prices.logo)}, business cards | MTWeb`,
+    description: `All MTWeb prices on one page: small business website from ${price(prices.site)}, website + NFC card ${price(prices.siteNfc)}, logo ${price(prices.logo)}, 500 business cards ${price(prices.businessCards)}. Net prices, no surprises.`,
+    eyebrow: 'Pricing',
+    heading: { pre: 'Prices that are ', hl: 'clear' },
+    intro: 'All our prices on a single page. Net prices, no hidden costs. Need something specific? We’ll send you a quick quote.',
+    tableCaption: 'MTWeb pricing, starting prices',
+    colService: 'Service',
+    colIncluded: 'What’s included',
+    colPrice: 'From',
+    details: 'See details',
+    rows: [
+      {
+        key: 'website',
+        name: 'Small business website (1 to 5 pages)',
+        included: 'Mobile-friendly, contact form, call button, Google Maps, basic search engine optimisation',
+        price: price(prices.site),
+      },
+      {
+        key: 'nfc',
+        name: 'Website + NFC Google review card',
+        included: 'The website, plus an NFC card linked to your Google review page, set up and tested',
+        price: price(prices.siteNfc),
+      },
+      {
+        key: 'logo',
+        name: 'Logo',
+        included: '2 concepts, 2 rounds of changes, PNG, SVG and favicon files',
+        price: price(prices.logo),
+      },
+      {
+        key: 'businessCards',
+        name: 'Business cards, 500 double-sided',
+        included: `Printing from your file. Design: +${price(prices.businessCardsDesign)}`,
+        price: price(prices.businessCards),
+      },
+      {
+        key: 'flyers',
+        name: 'Flyers',
+        included: 'Design or printing from your file, any size and quantity',
+        price: 'On quote',
+      },
+      {
+        key: 'signs',
+        name: 'Advertising signs',
+        included: 'Design and printing. Installation not included',
+        price: 'On quote',
+      },
+      {
+        key: 'nfc',
+        name: 'NFC Google review card only',
+        included: 'For those who already have a website',
+        price: 'On request',
+      },
+    ] as { key: RouteKey; name: string; included: string; price: string }[],
+    hosting: {
+      title: 'Hosting is separate',
+      text: `The website price covers its design. To keep it online, the hosting and maintenance plan costs ${price(prices.hostingMonthly)} a month. The first ${prices.hostingFreeMonths} months are free.`,
+      price: `${price(prices.hostingMonthly)} / month`,
+      items: [
+        'Hosting, security (HTTPS) and backups',
+        'Domain name and its renewal',
+        `${prices.hostingEditMinutes} minutes of changes per month`,
+        `The first ${prices.hostingFreeMonths} months free`,
+        'No commitment: stop whenever you like',
+      ],
+    },
+    packTitle: 'Launch Pack: website + logo + 500 cards',
+    packText: 'Everything you need to start, designed together. Ask for the pack price on WhatsApp.',
+    packCta: 'See the Launch Pack',
+    quoteTitle: 'Need something specific?',
+    quoteText: 'Extra pages, another format, a large quantity: tell us about your project and we’ll send you a clear quote.',
+  },
 
   notFound: {
     title: 'Page not found | MTWeb',

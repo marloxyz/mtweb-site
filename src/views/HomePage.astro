@@ -11,7 +11,7 @@ import Faq from '../components/Faq.astro';
 import Icon from '../components/Icon.astro';
 import { site, prices, packSeparateValue, whatsappLink } from '../data/site';
 import { realisations } from '../data/realisations';
-import { localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
+import { isPublished, localePath, useTranslations, type Lang, type RouteKey } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -204,10 +204,14 @@ const faqSchema = {
       <SectionHeading id="real-title" eyebrow={h.work.eyebrow} intro={h.work.intro}>
         <Fragment slot="title">{h.work.title.pre}<span class="hl">{h.work.title.hl}</span></Fragment>
       </SectionHeading>
-      <a href={href('portfolio')} class="link tap shrink-0 gap-1.5 self-start sm:self-auto" data-reveal>
-        {h.work.all}
-        <Icon name="arrow" size={18} />
-      </a>
+      {
+        isPublished('portfolio') && (
+          <a href={href('portfolio')} class="link tap shrink-0 gap-1.5 self-start sm:self-auto" data-reveal>
+            {h.work.all}
+            <Icon name="arrow" size={18} />
+          </a>
+        )
+      }
     </div>
     <div class="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
       {

@@ -32,6 +32,17 @@ export const routes = {
 
 export type RouteKey = keyof typeof routes;
 
+/**
+ * Pages pas encore publiées : leurs liens sont masqués partout (menu, footer, accueil).
+ * Retirer une clé de cette liste dès que la page existe.
+ */
+export const unpublished: readonly RouteKey[] = ['portfolio', 'nice', 'avignon', 'paca'];
+
+/** Vrai si la page est en ligne (lien affichable). */
+export function isPublished(key: RouteKey): boolean {
+  return !unpublished.includes(key);
+}
+
 /** Vrai si la page existe dans cette langue. */
 export function hasLang(key: RouteKey, lang: Lang): boolean {
   return Boolean((routes[key] as RouteDef)[lang]);

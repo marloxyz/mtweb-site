@@ -2,7 +2,7 @@
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { site, whatsappLink } from '../data/site';
-import { localePath, targetLang, useTranslations, type Lang, type RouteKey } from '../i18n';
+import { isPublished, localePath, targetLang, useTranslations, type Lang, type RouteKey } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -17,16 +17,26 @@ const link = (key: RouteKey) => {
   return { href: localePath(key, lang), label: t.pages[key], foreign: target !== lang ? target : undefined };
 };
 
-const columns: { title: string; keys: RouteKey[] }[] = [
+type Column = { title: string; keys: RouteKey[] };
+const allColumns: Column[] = [
   { title: t.footer.services, keys: ['website', 'businessCards', 'flyers', 'signs', 'logo', 'nfc'] },
   { title: t.footer.company, keys: ['portfolio', 'pricing', 'contact'] },
   { title: t.footer.zones, keys: ['nice', 'avignon', 'paca'] },
 ];
+// Pages pas encore publiées (src/i18n/routes.ts) : liens retirés, colonnes vides masquées.
+const columns = allColumns
+  .map((col) => ({ ...col, keys: col.keys.filter(isPublished) }))
+  .filter((col) => col.keys.length > 0);
 const legal = (['legal', 'privacy', 'terms'] as RouteKey[]).map(link);
 ---
 
 <footer class="mt-24 border-t border-line bg-surface" data-hide-wa>
-  <div class="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
+  <div
+    class:list={[
+      'container-site grid gap-10 py-14 sm:grid-cols-2',
+      columns.length === 3 ? 'lg:grid-cols-[1.3fr_repeat(3,1fr)]' : 'lg:grid-cols-[1.3fr_repeat(2,1fr)]',
+    ]}
+  >
     <div>
       <Logo width={140} class="h-auto w-[140px]" />
       <p class="mt-4 max-w-xs text-muted">{t.common.tagline}</p>

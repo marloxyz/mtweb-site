@@ -26,5 +26,5 @@ export const realisations: Realisation[] = [
     detail: { fr: 'Menu et flyer', en: 'Menu and flyer' },
     featured: true,
   },
-  { slug: 'a-m-barber', name: 'A&M Barber' /* nom exact À CONFIRMER */, type: 'site', featured: true },
+  { slug: 'a-m-barber', name: 'A&M Barber', type: 'site', featured: true },
 ];

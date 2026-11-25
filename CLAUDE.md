@@ -75,7 +75,7 @@ Réalisations : EMPLACEMENTS VIDES, les captures seront ajoutées plus tard.
   - le-summum.webp (menu / flyer imprimé)
   - a-m-barber.webp (site)
 - Les projets sont listés dans un seul fichier de données (src/data/realisations.ts) pour en ajouter ou retirer facilement.
-- Même principe pour les visuels de la page /panneaux-publicitaires : cadres vides réservés.
+- Même principe pour les visuels des pages services (cadres vides 16:10 réservés) : déposer les images dans /public/visuels/<page-fr>/ (ex. /public/visuels/creation-site-web/) sous les noms hero.webp (visuel du hero) et 1.webp, 2.webp, 3.webp (galerie, dans l'ordre des légendes de src/i18n/services.fr.ts). Les mêmes images servent aux versions FR et EN.
 
 Délai des 72 h : 72 heures ouvrées (du lundi au vendredi), comptées à partir de la réception de l'acompte et des éléments du client (textes, photos, logo). À préciser partout où le délai est détaillé.
 

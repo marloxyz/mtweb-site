@@ -1,0 +1,13 @@
+---
+// Texte d'un titre avec mot clé surligné en jaune et point rouge final (signature du logo).
+import type { TitleHl } from '../i18n/types';
+
+interface Props {
+  title: TitleHl;
+  /** Point rouge final. Désactivé dans SectionHeading, qui l'ajoute déjà. */
+  dot?: boolean;
+}
+const { title, dot = true } = Astro.props;
+---
+
+{title.pre}<span class="hl">{title.hl}</span>{dot && <span class="text-red">.</span>}

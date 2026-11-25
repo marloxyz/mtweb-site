@@ -2,6 +2,7 @@
 // Le dictionnaire anglais (en.ts) doit avoir exactement la même structure : TypeScript le vérifie.
 // Les titres avec surlignage jaune sont découpés en { pre, hl } : « pre » + mot surligné + point rouge.
 import { prices, packSeparateValue } from '../data/site';
+import { serviceUiFr, servicesFr } from './services.fr';
 
 const price = (n: number) => `${n.toLocaleString('fr-FR')} €`;
 
@@ -10,6 +11,7 @@ export const fr = {
 
   common: {
     skipLink: 'Aller au contenu',
+    breadcrumbHome: 'Accueil',
     homeAria: 'MTWeb, retour à l’accueil',
     navMain: 'Navigation principale',
     navMobile: 'Navigation mobile',
@@ -101,37 +103,45 @@ export const fr = {
   // Questions fréquentes. Les réponses marquées « À CONFIRMER » reposent sur des hypothèses.
   faq: [
     {
+      id: 'delay72',
       q: 'Les 72 h, c’est vraiment réaliste ?',
       a: 'Oui. Il s’agit de 72 heures ouvrées (du lundi au vendredi), comptées à partir de la réception de l’acompte et de vos éléments : textes, photos et logo. Dans ce délai, vous recevez un lien vers une première version en ligne, à consulter sur votre téléphone. Ensuite, on ajuste ensemble jusqu’à ce qu’elle vous plaise.',
     },
     {
+      id: 'plan',
       q: `Que comprend l’abonnement à ${price(prices.hostingMonthly)} par mois ?`,
       a: `L’hébergement de votre site, sa sécurité, les mises à jour et ${prices.hostingEditMinutes} minutes de modifications par mois (un horaire, un prix, une photo…). Les ${prices.hostingFreeMonths} premiers mois sont offerts. L’abonnement est séparé du prix de création du site.`,
     },
     {
+      id: 'domain',
       q: 'À qui appartient le nom de domaine ?',
       // À CONFIRMER : domaine enregistré au nom du client.
       a: 'À vous. Le nom de domaine (votre adresse, du type votre-nom.fr) est enregistré à votre nom. Vous en restez propriétaire, quoi qu’il arrive.',
     },
     {
+      id: 'cancel',
       q: 'Que se passe-t-il si j’arrête l’abonnement ?',
       // À CONFIRMER : conditions de sortie.
       a: 'Il est sans engagement : vous arrêtez quand vous voulez, par simple message. Votre site n’est alors plus hébergé par MTWeb. Vous gardez votre nom de domaine, et nous pouvons vous transmettre les fichiers du site pour le confier à quelqu’un d’autre.',
     },
     {
+      id: 'files',
       q: 'Pour les imprimés, je fournis le fichier ou vous le créez ?',
       a: `Les deux sont possibles. Si vous avez déjà un fichier prêt, on l’imprime tel quel. Sinon, on crée le visuel pour vous (par exemple + ${price(prices.businessCardsDesign)} pour des cartes de visite). Dans tous les cas, vous recevez un BAT, c’est-à-dire un aperçu final à valider : rien n’est imprimé sans votre accord.`,
     },
     {
+      id: 'printDelay',
       q: 'Quels sont les délais d’impression et de livraison ?',
       // À CONFIRMER : délais réels de l’imprimeur.
       a: 'Comptez en général une semaine entre la validation du BAT et la réception, selon le support et la quantité. Pour une date précise (ouverture, salon, événement), dites-le dès le départ : on s’organise en conséquence.',
     },
     {
+      id: 'remote',
       q: 'Travaillez-vous à distance ?',
       a: 'Oui, partout en France. Tout se fait facilement par WhatsApp, téléphone ou visio. Et si vous préférez, on peut aussi se rencontrer en personne.',
     },
     {
+      id: 'signsInstall',
       q: 'La pose des panneaux est-elle comprise ?',
       a: 'Non. MTWeb s’occupe de la création et de l’impression de vos panneaux. La pose reste à votre charge, ou à celle d’un poseur de votre choix.',
     },
@@ -258,6 +268,10 @@ export const fr = {
       cardTitle: 'Un message, une réponse',
     },
   },
+
+  // Pages services (contenus dans services.fr.ts)
+  serviceUi: serviceUiFr,
+  services: servicesFr,
 
   notFound: {
     title: 'Page introuvable | MTWeb',

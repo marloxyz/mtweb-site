@@ -1,0 +1,36 @@
+---
+// Emplacement visuel réservé (pages services).
+// - Si le fichier /public/<src> existe au moment du build : l'image s'affiche.
+// - Sinon : cadre vide 16:10, sans texte ni image factice (même style que les réalisations).
+// Ratio unique 16:10 (ex. 1600×1000).
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  /** Chemin public, ex. « /visuels/creation-site-web/hero.webp ». */
+  src: string;
+  alt: string;
+  /** Image au-dessus de la ligne de flottaison (hero) : chargement prioritaire. */
+  eager?: boolean;
+  class?: string;
+}
+const { src, alt, eager = false, class: className = '' } = Astro.props;
+const hasImage = fs.existsSync(path.join(process.cwd(), 'public', src));
+---
+
+<div class:list={['aspect-[16/10] overflow-hidden rounded-md border border-frame-line bg-frame', className]}>
+  {
+    hasImage && (
+      <img
+        src={src}
+        alt={alt}
+        width="1600"
+        height="1000"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        decoding="async"
+        class="h-full w-full object-cover"
+      />
+    )
+  }
+</div>

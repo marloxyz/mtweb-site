@@ -1,0 +1,309 @@
+---
+// Page service (FR et EN), commune aux 6 services.
+// Contenus : src/i18n/services.fr.ts et services.en.ts. Tarifs : src/data/site.ts.
+// Visuels : emplacements vides qui affichent /public/visuels/<page>/hero.webp, 1.webp, 2.webp, 3.webp dès qu'ils existent.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import VisualSlot from '../components/VisualSlot.astro';
+import Faq from '../components/Faq.astro';
+import Icon from '../components/Icon.astro';
+import TitleText from '../components/TitleText.astro';
+import ServiceExtra from '../components/ServiceExtra.astro';
+import { site, whatsappLink } from '../data/site';
+import { localePath, routes, useTranslations, type Lang, type RouteKey } from '../i18n';
+import type { ServiceKey } from '../i18n/types';
+
+interface Props {
+  lang: Lang;
+  service: ServiceKey;
+}
+const { lang, service } = Astro.props;
+const t = useTranslations(lang);
+const ui = t.serviceUi;
+const c = t.services[service];
+const href = (key: RouteKey) => localePath(key, lang);
+const abs = (path: string) => `${site.url}${path}`;
+
+// Dossier des visuels : nom de la page française (ex. « creation-site-web »).
+const visualDir = `/visuels/${routes[service].fr.replace(/^\//, '')}`;
+
+const allServices: ServiceKey[] = ['website', 'businessCards', 'flyers', 'signs', 'logo', 'nfc'];
+const others = allServices.filter((k) => k !== service);
+const showPack = service === 'website' || service === 'businessCards' || service === 'logo';
+const singleOffer = c.offers.items.length === 1;
+// Si une formule a une pastille, les autres reçoivent un espace équivalent (cartes côte à côte alignées).
+const anyBadge = c.offers.items.some((o) => o.badge);
+// Message WhatsApp pré-rempli avec la formule choisie (typographie française : espace avant les deux-points).
+const offerLink = (name: string) =>
+  whatsappLink(`${c.whatsapp} ${ui.offerLabel}${lang === 'fr' ? ' :' : ':'} ${name}`);
+
+const faqItems = [...c.faq.ids.map((id) => t.faq.find((f) => f.id === id)!), ...c.faq.extra];
+
+const schema: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: c.schemaName,
+    description: c.description,
+    serviceType: c.schemaName,
+    provider: { '@id': `${site.url}/#mtweb` },
+    areaServed: { '@type': 'Country', name: 'France' },
+    inLanguage: lang,
+    url: abs(href(service)),
+    ...(c.offers.items.some((o) => o.amount)
+      ? {
+          offers: c.offers.items
+            .filter((o) => o.amount)
+            .map((o) => ({
+              '@type': 'Offer',
+              name: o.name,
+              price: o.amount,
+              priceCurrency: 'EUR',
+              url: abs(href(service)),
+            })),
+        }
+      : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t.common.breadcrumbHome, item: abs(href('home')) },
+      { '@type': 'ListItem', position: 2, name: t.pages[service], item: abs(href(service)) },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: lang,
+    mainEntity: faqItems.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+
+<BaseLayout lang={lang} routeKey={service} title={c.title} description={c.description} schema={schema}>
+  <!-- 1. HERO -->
+  <section class="relative overflow-hidden">
+    <div class="container-site grid items-center gap-12 pb-16 pt-8 sm:pt-12 lg:grid-cols-2 lg:gap-[clamp(3rem,5vw,8rem)] lg:pb-[clamp(5rem,6vw,8rem)] lg:pt-[clamp(3rem,4vw,6rem)]">
+      <div>
+        <nav aria-label={ui.breadcrumb} class="text-sm text-muted">
+          <ol class="flex flex-wrap items-center gap-1">
+            <li><a href={href('home')} class="tap hover:text-ink hover:underline">{t.common.breadcrumbHome}</a></li>
+            <li aria-hidden="true" class="px-1">/</li>
+            <li aria-current="page" class="font-medium text-ink">{t.pages[service]}</li>
+          </ol>
+        </nav>
+        <p class="eyebrow mt-4">{c.hero.eyebrow}</p>
+        <h1 class="mt-4 text-[clamp(40px,5vw,96px)] font-semibold leading-[1.04]">
+          <TitleText title={c.hero.heading} />
+        </h1>
+        <p class="measure mt-6 text-[clamp(1.125rem,1.1vw,1.5rem)] leading-relaxed text-muted">{c.hero.intro}</p>
+        <p class="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-display text-2xl font-semibold">
+          <span class="h-2 w-2 rounded-full bg-red" aria-hidden="true"></span>
+          {c.hero.priceTag}
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-hide-wa>
+          <a href={whatsappLink(c.whatsapp)} class="btn btn-primary" target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="text-whatsapp" />
+            {t.common.whatsappCta}
+          </a>
+          <a href="#tarifs" class="btn btn-secondary">{ui.seePricing}</a>
+        </div>
+      </div>
+      <div class="crop mx-auto w-full max-w-[640px] lg:max-w-none">
+        <VisualSlot src={`${visualDir}/hero.webp`} alt={c.hero.visualAlt} eager />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TARIFS -->
+  <section id="tarifs" class="container-site border-t border-line py-20 lg:py-28" aria-labelledby="offers-title">
+    <SectionHeading id="offers-title" eyebrow={ui.offersEyebrow} intro={c.offers.intro}>
+      <Fragment slot="title"><TitleText title={c.offers.heading} dot={false} /></Fragment>
+    </SectionHeading>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      {
+        c.offers.items.map((o, i) => (
+          <article
+            class:list={[
+              'card crop flex flex-col p-6 sm:p-10',
+              o.featured && 'border-2 border-blue-dark',
+            ]}
+            data-reveal
+            style={`--reveal-delay:${i * 80}ms`}
+          >
+            {!o.badge && anyBadge && <span class="mb-4 hidden h-[26px] lg:block" aria-hidden="true" />}
+            {o.badge && (
+              <p class="mb-4 inline-flex items-center gap-2 self-start rounded-full bg-blue-dark px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] text-white">
+                <span class="h-1.5 w-1.5 rounded-full bg-yellow" aria-hidden="true" />
+                {o.badge}
+              </p>
+            )}
+            <h3 class="text-2xl font-semibold sm:text-3xl">{o.name}</h3>
+            <p class="mt-4 font-display text-4xl font-semibold text-blue-dark sm:text-5xl">{o.price}</p>
+            {o.priceNote && <p class="mt-1 text-sm text-muted">{o.priceNote}</p>}
+            <ul class="mt-6 flex-1 space-y-3 border-t border-line pt-6">
+              {o.items.map((item) => (
+                <li class="flex gap-3">
+                  <Icon name="check" size={22} class="mt-0.5 shrink-0 text-blue-dark" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <a
+              href={offerLink(o.name)}
+              class:list={['btn mt-8 w-full', o.featured || singleOffer ? 'btn-primary' : 'btn-secondary']}
+              target="_blank"
+              rel="noopener"
+              data-hide-wa
+            >
+              <Icon name="whatsapp" class={o.featured || singleOffer ? 'text-whatsapp' : 'text-[#128c7e]'} />
+              {o.cta}
+            </a>
+          </article>
+        ))
+      }
+
+      {
+        singleOffer && (
+          <aside class="flex flex-col justify-center rounded-xl bg-surface p-6 sm:p-10" data-reveal style="--reveal-delay:80ms">
+            <ServiceExtra lang={lang} extra={c.extra} />
+          </aside>
+        )
+      }
+    </div>
+
+    <p class="mt-8 text-sm text-muted">
+      {c.offers.note && <strong class="font-semibold text-ink">{c.offers.note} </strong>}
+      {ui.vatLine}
+    </p>
+  </section>
+
+  <!-- 3. BLOC SPÉCIFIQUE (hébergement, logo…) quand il y a plusieurs formules -->
+  {
+    !singleOffer && (
+      <section class="container-site pb-20 lg:pb-28" aria-label={c.extra.eyebrow}>
+        <div class="rounded-xl bg-surface p-6 sm:p-10 lg:p-14" data-reveal>
+          <ServiceExtra lang={lang} extra={c.extra} wide />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 4. ÉTAPES -->
+  <section class="border-y border-line bg-surface" aria-labelledby="steps-title">
+    <div class="container-site py-20 lg:py-28">
+      <SectionHeading id="steps-title" eyebrow={ui.stepsEyebrow}>
+        <Fragment slot="title"><TitleText title={c.steps.heading} dot={false} /></Fragment>
+      </SectionHeading>
+      <ol class="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-8">
+        {
+          c.steps.items.map((step, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 90}ms`}>
+              <div class="flex items-center gap-4">
+                <span class="font-display text-6xl font-semibold leading-none text-blue">{i + 1}</span>
+                {i < c.steps.items.length - 1 && (
+                  <span class="hidden h-px flex-1 border-t border-dashed border-ink/30 lg:block" aria-hidden="true" />
+                )}
+              </div>
+              <h3 class="mt-5 text-xl font-semibold sm:text-2xl">{step.title}</h3>
+              <p class="measure mt-2 leading-relaxed text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. GALERIE (emplacements vides) -->
+  <section class="container-site py-20 lg:py-28" aria-labelledby="gallery-title">
+    <SectionHeading id="gallery-title" eyebrow={ui.galleryEyebrow} intro={c.gallery.intro}>
+      <Fragment slot="title"><TitleText title={c.gallery.heading} dot={false} /></Fragment>
+    </SectionHeading>
+    <div class="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        c.gallery.slots.map((caption, i) => (
+          <figure data-reveal style={`--reveal-delay:${(i % 3) * 70}ms`}>
+            <VisualSlot src={`${visualDir}/${i + 1}.webp`} alt={`${c.hero.visualAlt} : ${caption.toLowerCase()}`} />
+            <figcaption class="mt-3 font-display text-lg font-semibold">{caption}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 6. PACK LANCEMENT (site, cartes, logo) -->
+  {
+    showPack && (
+      <section class="container-site pb-20 lg:pb-28" aria-label={ui.packTeaser.badge}>
+        <div class="flex flex-col gap-6 rounded-xl bg-blue-dark p-6 text-white sm:p-10 lg:flex-row lg:items-center lg:justify-between" data-reveal>
+          <div>
+            <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-ink">
+              <span class="h-2 w-2 rounded-full bg-red" aria-hidden="true" />
+              {ui.packTeaser.badge}
+            </p>
+            <h2 class="mt-4 text-2xl font-semibold sm:text-3xl">
+              {ui.packTeaser.title}
+              <span class="text-yellow">.</span>
+            </h2>
+            <p class="measure mt-2 text-white/90">{ui.packTeaser.text}</p>
+          </div>
+          <a href={`${href('home')}#pack`} class="btn shrink-0 bg-white text-ink hover:bg-paper">
+            {ui.packTeaser.cta}
+            <Icon name="arrow" size={18} />
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 7. FAQ -->
+  <section class="container-site pb-20 lg:pb-28" aria-labelledby="faq-title">
+    <SectionHeading id="faq-title" eyebrow={ui.faqEyebrow}>
+      <Fragment slot="title"><TitleText title={ui.faqHeading} dot={false} /></Fragment>
+    </SectionHeading>
+    <div class="mt-10" data-hide-wa>
+      <Faq items={faqItems} />
+    </div>
+  </section>
+
+  <!-- 8. APPEL À L'ACTION -->
+  <section class="container-site" aria-labelledby="cta-title" data-hide-wa>
+    <div class="grid gap-8 rounded-xl bg-ink p-8 text-white sm:p-12 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:p-16" data-reveal>
+      <div>
+        <h2 id="cta-title" class="text-[clamp(2rem,3vw,3.5rem)] font-semibold leading-tight">
+          {ui.ctaHeading.pre}<span class="rounded-sm bg-yellow px-2 text-ink [box-decoration-break:clone]">{ui.ctaHeading.hl}</span>
+        </h2>
+        <p class="measure mt-4 text-lg leading-relaxed text-white/85">{ui.ctaText}</p>
+      </div>
+      <div class="flex flex-col gap-3">
+        <a href={whatsappLink(c.whatsapp)} class="btn w-full bg-white text-ink hover:bg-paper" target="_blank" rel="noopener">
+          <Icon name="whatsapp" class="text-[#128c7e]" />
+          {t.common.whatsappCta}
+        </a>
+        <a href={`${href('home')}#contact`} class="tap w-full justify-center text-white/90 underline-offset-4 hover:text-white hover:underline">
+          {ui.ctaForm}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. AUTRES SERVICES -->
+  <nav class="container-site pt-20" aria-labelledby="others-title">
+    <h2 id="others-title" class="font-sans text-sm font-semibold uppercase tracking-[0.12em]">{ui.otherServices}</h2>
+    <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      {
+        others.map((k) => (
+          <li>
+            <a href={href(k)} class="card card-hover flex min-h-14 items-center justify-between gap-3 px-5 py-3 font-medium">
+              {t.pages[k]}
+              <Icon name="arrow" size={18} class="shrink-0 text-blue-dark" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</BaseLayout>
+

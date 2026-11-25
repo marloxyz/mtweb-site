@@ -2,6 +2,7 @@
 // Prices are identical to the French version; only the formatting changes (€399).
 import { prices, packSeparateValue } from '../data/site';
 import type { Dict } from './fr';
+import { serviceUiEn, servicesEn } from './services.en';
 
 const price = (n: number) => `€${n.toLocaleString('en-GB')}`;
 
@@ -10,6 +11,7 @@ export const en: Dict = {
 
   common: {
     skipLink: 'Skip to content',
+    breadcrumbHome: 'Home',
     homeAria: 'MTWeb, back to home page',
     navMain: 'Main navigation',
     navMobile: 'Mobile navigation',
@@ -99,34 +101,42 @@ export const en: Dict = {
 
   faq: [
     {
+      id: 'delay72',
       q: 'Is 72 hours really realistic?',
       a: 'Yes. That’s 72 business hours (Monday to Friday), counted from when we receive your deposit and your materials: texts, photos and logo. Within that time, you get a link to a first version online, ready to view on your phone. Then we fine-tune it together until you’re happy with it.',
     },
     {
+      id: 'plan',
       q: `What does the ${price(prices.hostingMonthly)} monthly plan include?`,
       a: `Hosting for your website, security, updates and ${prices.hostingEditMinutes} minutes of changes per month (opening hours, a price, a photo…). The first ${prices.hostingFreeMonths} months are free. The plan is separate from the website design price.`,
     },
     {
+      id: 'domain',
       q: 'Who owns the domain name?',
       a: 'You do. The domain name (your web address, like your-name.com) is registered in your name. It stays yours, whatever happens.',
     },
     {
+      id: 'cancel',
       q: 'What happens if I cancel the plan?',
       a: 'There’s no commitment: you can stop anytime with a simple message. Your website is then no longer hosted by MTWeb. You keep your domain name, and we can send you the website files so someone else can take over.',
     },
     {
+      id: 'files',
       q: 'For print, do I supply the file or do you design it?',
       a: `Both work. If you already have a print-ready file, we print it as is. If not, we design it for you (for example, +${price(prices.businessCardsDesign)} for business cards). Either way, you get a final proof to approve: nothing is printed without your OK.`,
     },
     {
+      id: 'printDelay',
       q: 'How long do printing and delivery take?',
       a: 'Usually about a week between proof approval and delivery, depending on the item and the quantity. Working to a date (opening, trade show, event)? Tell us at the start and we’ll plan around it.',
     },
     {
+      id: 'remote',
       q: 'Do you work remotely?',
       a: 'Yes, anywhere in France. Everything is easy over WhatsApp, phone or video call. And if you prefer, we can also meet in person.',
     },
     {
+      id: 'signsInstall',
       q: 'Is sign installation included?',
       a: 'No. MTWeb designs and prints your signs. Installation is up to you, or to an installer of your choice.',
     },
@@ -253,6 +263,9 @@ export const en: Dict = {
       cardTitle: 'One message, one answer',
     },
   },
+
+  serviceUi: serviceUiEn,
+  services: servicesEn,
 
   notFound: {
     title: 'Page not found | MTWeb',

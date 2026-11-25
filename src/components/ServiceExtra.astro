@@ -1,0 +1,45 @@
+---
+// Bloc spécifique d'une page service (abonnement d'hébergement, formats du logo, pose des panneaux…).
+import Icon from './Icon.astro';
+import TitleText from './TitleText.astro';
+import { localePath, type Lang } from '../i18n';
+import type { ServiceContent } from '../i18n/types';
+
+interface Props {
+  lang: Lang;
+  extra: ServiceContent['extra'];
+  /** Mise en page large (2 colonnes) quand le bloc occupe toute la largeur. */
+  wide?: boolean;
+}
+const { lang, extra, wide = false } = Astro.props;
+---
+
+<div class:list={[wide && extra.items && 'grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-16']}>
+  <div>
+    <p class="eyebrow">{extra.eyebrow}</p>
+    <h2 class="mt-3 text-[clamp(1.75rem,2.4vw,3rem)] font-semibold leading-tight">
+      <TitleText title={extra.heading} />
+    </h2>
+    <p class="measure mt-4 text-lg leading-relaxed text-muted">{extra.text}</p>
+    {
+      extra.link && (
+        <a href={localePath(extra.link.key, lang)} class="link tap mt-2 gap-1.5">
+          {extra.link.label}
+          <Icon name="arrow" size={18} />
+        </a>
+      )
+    }
+  </div>
+  {
+    extra.items && (
+      <ul class:list={['space-y-3', wide ? 'card p-6 sm:p-8' : 'mt-6']}>
+        {extra.items.map((item) => (
+          <li class="flex gap-3">
+            <Icon name="check" size={22} class="mt-0.5 shrink-0 text-blue-dark" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
